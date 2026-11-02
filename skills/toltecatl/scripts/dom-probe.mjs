@@ -24,7 +24,7 @@ const SCHEMES = new Set(["light", "dark"]);
 const NAV_TIMEOUT_MS = 30000;
 const CHROME_START_TIMEOUT_MS = 15000;
 const MAX_SCREENSHOT_HEIGHT_PX = 4800;
-const REVEAL_STEP_PAUSE_MS = 30;
+const REVEAL_STEP_PAUSE_MS = 40;
 const REVEAL_SETTLE_MS = 100;
 const USER_DATA_RM_OPTIONS = { recursive: true, force: true, maxRetries: 5, retryDelay: 100 };
 const EXIT = { OK: 0, STRICT_FAIL: 1, USAGE: 2, NO_ENGINE: 3 };
@@ -82,15 +82,20 @@ async function tryLoadPlaywright() {
 const PAGE_READY_SOURCE = `(async () => {
   if (document.fonts) await document.fonts.ready;
   const pause = (ms) => new Promise((done) => setTimeout(done, ms));
+  const nextFrame = () => new Promise((done) => requestAnimationFrame(() => done()));
+  // 'instant' overrides CSS scroll-behavior: smooth, which would otherwise leave the page mid-scroll.
+  const jumpTo = async (top) => {
+    window.scrollTo({ top, behavior: "instant" });
+    await nextFrame();
+    await nextFrame();
+    await pause(${REVEAL_STEP_PAUSE_MS});
+  };
   const step = Math.max(1, window.innerHeight);
   const end = Math.min(document.documentElement.scrollHeight, ${MAX_SCREENSHOT_HEIGHT_PX});
-  for (let y = step; y < end; y += step) {
-    window.scrollTo(0, y);
-    await pause(${REVEAL_STEP_PAUSE_MS});
-  }
-  window.scrollTo(0, 0);
+  for (let y = step; y < end; y += step) await jumpTo(y);
+  await jumpTo(0);
   await pause(${REVEAL_SETTLE_MS});
-  return true;
+  return window.scrollY;
 })()`;
 
 const IN_PAGE_PROBE_SOURCE = `((viewportWidth) => {
