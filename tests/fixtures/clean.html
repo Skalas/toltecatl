@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toltecatl Clean Reference Fixture</title>
+  <style>
+    :root {
+      --surface-bg: #0f1011;
+      --surface-card: #191a1b;
+      --ink-primary: #f7f8f8;
+      --ink-muted: #8a8f98;
+      --accent: #5e6ad2;
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+      --z-header: 10;
+      --z-modal: 40;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--surface-bg);
+      color: var(--ink-primary);
+      font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+    }
+
+    .shell {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    .card {
+      background: var(--surface-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 24px;
+    }
+
+    .line-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: end;
+    }
+
+    .metric-price {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-variant-numeric: tabular-nums;
+      font-size: 1.25rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      min-width: 44px;
+      padding: 0 18px;
+      background: var(--accent);
+      color: var(--ink-primary);
+      border: 1px solid transparent;
+      border-radius: 6px;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 160ms var(--ease-out), background-color 160ms var(--ease-out);
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn:focus {
+      outline: none;
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--ink-primary);
+      outline-offset: 2px;
+    }
+
+    @keyframes popover-enter {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="card">
+      <h1>Hoja de Control Operativo</h1>
+      <p>Resumen de corte de caja con tipografia tabular y estados interactivos completos.</p>
+      <div class="line-grid">
+        <div>
+          <span>Total del turno matutino</span>
+          <strong class="metric-price">$14,280.50</strong>
+        </div>
+        <button type="button" class="btn">Confirmar corte</button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

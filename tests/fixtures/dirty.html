@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toltecatl Dirty Anti-Pattern Fixture</title>
+  <style>
+    body {
+      background-color: #f4f1ea;
+      font-family: sans-serif;
+    }
+
+    .hero-title {
+      background: linear-gradient(90deg, #7c3aed, #2563eb);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .callout-card {
+      border-left: 4px solid #7c3aed;
+      padding: 16px;
+      z-index: 9999;
+    }
+
+    .slop-button {
+      outline: none;
+      transition: all 300ms ease-in;
+    }
+
+    @keyframes bad-modal-pop {
+      from {
+        transform: scale(0);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 class="hero-title">🔒 Revolutionize your workflow — effortlessly</h1>
+    <div class="callout-card">
+      <p>Unleash the next game-changer — built to seamlessly elevate your operations.</p>
+      <button class="slop-button">Launch 🚀</button>
+    </div>
+  </main>
+  <script>
+    window.addEventListener('scroll', () => {
+      console.log('jank');
+    });
+  </script>
+</body>
+</html>
