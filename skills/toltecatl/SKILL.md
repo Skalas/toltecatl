@@ -1,7 +1,7 @@
 ---
 name: toltecatl
 description: "Use when the user explicitly asks for a UI/UX audit, visual critique, design exploration (2-3 HTML variants), brand/logo SVG geometry, or DESIGN.md system specification."
-version: 1.0.0
+version: 2.0.0
 license: MIT
 ---
 
@@ -11,10 +11,10 @@ license: MIT
 
 | Engine | Domain | Ownership |
 | --- | --- | --- |
-| `metate` | **Code** | Sprints, production implementation, tests, `dod.sh`, CI |
-| `tlahcuilo` | **Prose** | Multi-model debate, anti-AI voice pass, voice fingerprint |
-| `mictlan` | **Memory** | Nightly consolidation and archival |
-| `toltecatl` | **Form & Proportion** | Visual direction, DOM-computed UI/UX audits, throwaway HTML prototypes (`sketches/`), mathematical `<svg>` brand assets (`design/assets/`), `DESIGN.md` token contracts, and surgical `Before | After | Why | Proof` specs handed off to `metate` |
+| `metate` | **Code** | Sprints, implementation, tests, CI |
+| `tlahcuilo` | **Prose** | Multi-model debate, voice pass |
+| `mictlan` | **Memory** | Consolidation and archival |
+| `toltecatl` | **Form & Proportion** | DOM-computed audits, `sketches/` prototypes, `<svg>` brand assets, `DESIGN.md`, `Before | After | Why | Proof` specs for `metate` |
 
 ## Critical Boundary Rule
 
@@ -44,8 +44,8 @@ Never load all ceremonies at once. Load only the ceremony matching the user's re
 
 | Request Type | Ceremony to Read | Deliverable |
 | --- | --- | --- |
-| Live UI/UX critique, visual QA, responsive/alignment check, motion or contrast audit | `ceremonies/audit.md` | Computed DOM evidence (`.toltecatl/audit/<run>/`), 2x screenshots (`375px`/`768px`/`1440px`), 2-lens `Before \| After \| Why \| Proof` table, and Issue vs Milestone sizing |
-| New screen/site exploration, 2–3 HTML mockups, brand palette lab, mathematical `<svg>` logo, or `DESIGN.md` creation | `ceremonies/explore.md` | 2–3 interactive HTML variants (`sketches/NNN-<stance>/index.html`), `<svg>` marks (`design/assets/`), 2x Retina screenshots via `MEDIA:`, Head-to-Head table, locked `DESIGN.md` / `COMMIT-SHEET.md` |
+| Live UI/UX critique, visual QA, responsive/alignment check, motion or contrast audit | `ceremonies/audit.md` | `.toltecatl/audit/<run>/` evidence, 2x screenshots (375/768/1440, light + dark), 3-lens `Before \| After \| Why \| Proof` table (Lens 0 `lenses/composition-and-copy.md`), Issue vs Milestone sizing |
+| New screen/site exploration, 2–3 HTML mockups, brand palette lab, mathematical `<svg>` logo, or `DESIGN.md` creation | `ceremonies/explore.md` | `templates/COMMIT-SHEET.md` filled first, 2–3 structurally divergent `sketches/NNN-<stance>/index.html`, `<svg>` marks, 2x screenshots, Head-to-Head, locked `DESIGN.md` |
 | Convert approved `audit` findings or `explore` winner into tracked engineering work (or apply to static HTML) | `ceremonies/handoff.md` | GitHub Issue(s) or partitioned GitHub Milestone with `retires` + `requiredTouches` for `metate-start`, OR verified static HTML edit gated by `ui-gate.mjs` |
 
 ## Step 2: Load Matching `house/` Packs (On-Demand Only)
@@ -54,17 +54,16 @@ Load a `house/` pack **only** when the assignment touches its domain:
 
 - `house/anti-rgb-and-svg-geometry.md` — **Always load** when choosing colors/palettes, building a Live Color Lab, or crafting `<svg>` logos, wordmarks, and icons.
 - `house/hoja-de-barra.md` — Load for cafés, restaurants, bakeries, hospitality, and physical venue sites.
-- `house/instrument-b2b.md` — Load for B2B SaaS, POS, ERP, fintech, or devtools landing pages and interactive product showcases.
+- `house/instrument-b2b.md` — Load for B2B SaaS, POS, ERP, fintech, or devtools landing pages and product showcases.
+- `house/editorial-personal.md` — Load for personal sites, essays, portfolios, and editorial publications (never dress them as consoles).
 
 ## Step 3: Deterministic CLI Scripts (Never Read `data/*.json` Directly)
 
 Let `<skill>` be the directory containing this `SKILL.md`. Always invoke these Node.js scripts instead of loading raw JSON catalogs into context:
 
-- **Static & House Rule Gate:**
-  `node <skill>/scripts/ui-gate.mjs [--json] [--strict-house] <file-or-dir> [...]`
-  Fails (exit `1`) on `EM_DASH` (`—`), `TRANSITION_ALL`, `EASE_IN_UI`, `SCALE_ZERO_ENTRY`, `SCROLL_LISTENER`, `GRADIENT_TEXT`, `SIDE_STRIPE_BORDER`, `SLOP_BUZZWORDS`, and (with `--strict-house`) `EMOJI_OR_DINGBAT` and `OFF_BRAND_CREAM_HEX`.
-- **Computed DOM & Multi-Viewport Inspector:**
-  `node <skill>/scripts/dom-probe.mjs <url-or-file> [--out <dir>]`
-  Probes `375x812`, `768x1024`, and `1440x900` for horizontal overflow, missing `tabular-nums`, `.line-grid`/`.form-row` baseline drift (`> 1.5px`), `< 44px` mobile hit targets, and captures viewport screenshots.
-- **Zero-Bloat Reference & Brand Dealer (< 1.5 KB stdout):**
-  `node <skill>/scripts/ref-dealer.mjs --list-brands | --brand <slug> | --list-directions | --direction <id> | --deal <n>`
+- **Static & House Rule Gate:** `node <skill>/scripts/ui-gate.mjs [--json] [--strict-house] <file-or-dir> [...]`
+  Exit `1` on `EM_DASH`, `TRANSITION_ALL`, `EASE_IN_UI`, `SCALE_ZERO_ENTRY`, `SCROLL_LISTENER`, `GRADIENT_TEXT`, `SIDE_STRIPE_BORDER`, `SLOP_BUZZWORDS`; with `--strict-house` also `EMOJI_OR_DINGBAT`, `OFF_BRAND_CREAM_HEX`, `EYEBROW_SPAM`, `CARD_TEXT_BLOAT`. Exit `2` on no scannable files.
+- **Computed DOM Inspector:** `node <skill>/scripts/dom-probe.mjs <url-or-file> [--out <dir>] [--scheme light|dark] [--strict]`
+  Playwright or native Chrome CDP at 375/768/1440 (2x): overflow, `tabular-nums`, row baseline drift, `< 44px` targets, `proseDensity`, `composition` (eyebrows, `h1/body` scale, section clones, canvas `L`). Exit `3` with no browser.
+- **Reference Dealer (< 3 KB stdout):** `node <skill>/scripts/ref-dealer.mjs`
+  `--list-brands | --brand <slug> | --list-directions | --direction <id> | --deal [n] | --list-palettes [--tag t] | --palette <id> | --list-types [--class c] | --type <id> | --deal-system [--sector s] [--tone t]`

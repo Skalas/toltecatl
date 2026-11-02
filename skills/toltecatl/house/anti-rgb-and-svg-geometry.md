@@ -12,6 +12,12 @@ Before proposing or locking any hex code, inspect its `(R, G, B)` channel balanc
    When avoiding default AI indigo (`#6366F1`), **never** swing to 100%-saturated International Orange (`#FF4800`), Tailwind Emerald (`#10B981`), or Electric Klein Blue (`#0047FF`).
 2. **Trap 2 — The Claude / Anthropic Warm-Brown & Cream Signature (`R > B`):**
    - Never pair warm brownish-charcoal darks (`#262624`, `#2A2726` where `R > B`) with warm cream/stone canvases (`#F2EDE4`, `#EFECE6`, `#FAF8F5`, `#FAFAF9`) and terracotta/ochre. That exact RGB signature reads immediately as Claude Desktop's default theme.
+   - **Cream Canvas Rule (scoped by Surface Mode):** `OFF_BRAND_CREAM_HEX` bans **accidental** warm-cream drift (`#F4F1EA`, `#F7F4EE`, `#FAF8F5`, `#F2EDE4`, `#EFECE6`, `#FDF8F3`) on cool/neutral `OPERATE` and B2B surfaces, where a stray cream panel signals token drift. On `PERSUADE` hospitality (`hoja-de-barra.md`) and editorial/personal (`editorial-personal.md`) surfaces, warm paper or cotton is a **deliberate** choice: declare it once as a root token with a reasoned suppression on the line above, and keep ink achromatic or cool (`R <= B`) so it never forms the warm-brown pair above:
+     ```css
+     /* toltecatl-allow: OFF_BRAND_CREAM_HEX -- deliberate editorial/hospitality paper canvas */
+     --paper: #faf8f5;
+     ```
+     Suppressions apply to their own line and the next (file-wide only in the first 15 lines), so every stray cream literal elsewhere still fails `--strict-house`.
    - **Callout Surface Rule on Cool Canvases:** When a brand pairs a warm bronze/amber accent (`#A47146`) with a cool mineral/silver canvas (`#F0EFF0`, `#EEF2F2`), **never** tint callouts, warning boxes, or highlighted inputs with warm cream/peach backgrounds (`#FDF8F3`, `#FFF8F1`, `#FFFDF9`, `#F4F1EA` where `R > G > B`). Keep the neutral canvas or pure `#FFFFFF` surface so secondary views never drift into a warm-cream signature.
 3. **Trap 3 — Mass-Retail & Crypto Archetype Collisions:**
    - Mid-tone royal blue + bright yellow (`#0060A9` + `#FFCB1A`) collides with IKEA / Walmart. Fix by darkening the blue >= 20% into deep Prussian (`#0D233A`).

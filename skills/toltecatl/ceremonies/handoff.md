@@ -28,7 +28,7 @@ Every GitHub Issue created by `toltecatl` **must** contain these four sections s
 ## 1. Visual Authority & Reference
 - **Source Ceremony:** `toltecatl` (`audit` run `.toltecatl/audit/<run>/` | `explore` winner `sketches/NNN-<stance>/index.html`)
 - **Surface Mode & Archetype:** `OPERATE` — Operate / Configure
-- **Locked Token Spec:** `DESIGN.md` (section / commit reference)
+- **Locked Token Spec:** `DESIGN.md` (section / commit reference) + locked `sketches/NNN-<winner>/COMMIT-SHEET.md` (explore only)
 - **Visual Proof:** `<path-to-before-or-sketch-screenshot.png>`
 
 ## 2. Surgical Specification (`Before | After | Why | Proof`)
@@ -50,10 +50,12 @@ requiredTouches:
 ```
 - **`retires`:** Exact deprecated CSS classes, hardcoded off-brand hex literals, legacy props, or patterns that must reach **0 occurrences** across the target scope (`git grep` = 0).
 - **`requiredTouches`:** Every sibling view, modal, or component that shares the updated token/pattern and must be modified in the same sprint so no route is left half-migrated.
+- **Macro & copy rows (Lens 0):** structural changes (merge/delete sections, `4/8` re-grid) and copy cuts ship with the exact replacement text and its word count in the `After` column, so `metate` never has to invent copy.
 
 ## 4. Verification Gate Commands
 - `node skills/toltecatl/scripts/ui-gate.mjs --strict-house <touched-files>` (exit `0`)
-- `node skills/toltecatl/scripts/dom-probe.mjs <route-url> --out .toltecatl/verify/` (`0` overflow, `0` baseline drift, `0` `<44px` mobile hit targets)
+- `node skills/toltecatl/scripts/dom-probe.mjs <route-url> --strict --out .toltecatl/verify/` (exit `0`: `0` overflow, `0` baseline drift, `0` `<44px` mobile hit targets; repeat with `--scheme light` and `--scheme dark` when both are supported)
+- Lens 0 targets from the spec hold in `computed-tree.json` (e.g. `cardTextBloat: []`, `sectionOpeningClone.flagged: false`, `h1ToBodyRatio >= 1.8`)
 ```
 
 After creating the Issue(s) or Milestone via `gh`, report the exact issue URLs and milestone number so the user can launch `metate-start`.
@@ -65,13 +67,13 @@ After creating the Issue(s) or Milestone via `gh`, report the exact issue URLs a
 When the target is a standalone static HTML/CSS file or static venue/marketing site with no application test suite:
 
 1. **Apply the Winning Spec or Audit Fixes:**
-   Edit the HTML/CSS files directly, honoring all rules from `DESIGN.md` and the active `house/` packs (`anti-rgb-and-svg-geometry.md`, `hoja-de-barra.md`, or `instrument-b2b.md`).
+   Edit the HTML/CSS files directly, honoring all rules from `DESIGN.md` and the active `house/` packs (`anti-rgb-and-svg-geometry.md`, `hoja-de-barra.md`, `instrument-b2b.md`, or `editorial-personal.md`).
 2. **Enforce Deterministic Static Gate (`ui-gate.mjs`):**
    ```bash
    node <skill>/scripts/ui-gate.mjs --strict-house <target-files>
    ```
    Must exit `0` with zero `FAIL` or `WARN` violations (zero `em-dash` `—`, zero emojis/dingbats, zero `transition: all`, zero `ease-in`, zero `scale(0)`).
 3. **Multi-Viewport Computed & Visual QA (`375px` / `768px` / `1440px`):**
-   Run `node <skill>/scripts/dom-probe.mjs <url-or-file> --out .toltecatl/verify/` (and use CDP `Emulation.setDeviceMetricsOverride` for `375px` at `2x` DPR when using `browser_exec`).
+   Run `node <skill>/scripts/dom-probe.mjs <url-or-file> --strict --out .toltecatl/verify/` (true `375px` device metrics at `2x` via Playwright or CDP; `engine` must not be `degraded-fallback`).
 4. **Inspect & Deliver Proof:**
    Verify all three viewport screenshots with `vision_analyze`, confirm zero console errors and zero layout regressions, and attach the final `375px`, `768px`, and `1440px` screenshots inline via `MEDIA:`.

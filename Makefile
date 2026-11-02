@@ -25,7 +25,7 @@ budget: ## Verify progressive-disclosure line and byte budgets
 		echo "  ✗ SKILL.md out of budget: $$lines lines, $$bytes bytes" >&2; exit 1; \
 	fi; \
 	echo "  ✓ SKILL.md: $$lines/150 lines, $$bytes/6500 bytes"
-	@for f in skills/toltecatl/ceremonies/*.md skills/toltecatl/lenses/*.md skills/toltecatl/house/*.md; do \
+	@for f in skills/toltecatl/ceremonies/*.md skills/toltecatl/lenses/*.md skills/toltecatl/house/*.md skills/toltecatl/templates/*.md; do \
 		lines=$$(wc -l < "$$f" | tr -d ' '); \
 		if [ "$$lines" -gt 200 ]; then \
 			echo "  ✗ $$f exceeds 200 lines ($$lines)" >&2; exit 1; \
