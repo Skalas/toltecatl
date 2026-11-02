@@ -23,8 +23,9 @@ const DEVICE_SCALE_FACTOR = 2;
 const SCHEMES = new Set(["light", "dark"]);
 const NAV_TIMEOUT_MS = 30000;
 const CHROME_START_TIMEOUT_MS = 15000;
-const MAX_SCREENSHOT_HEIGHT_PX = 16000;
-const LAYOUT_SETTLE_MS = 150;
+const MAX_SCREENSHOT_HEIGHT_PX = 4800;
+const REVEAL_STEP_PAUSE_MS = 30;
+const REVEAL_SETTLE_MS = 100;
 const USER_DATA_RM_OPTIONS = { recursive: true, force: true, maxRetries: 5, retryDelay: 100 };
 const EXIT = { OK: 0, STRICT_FAIL: 1, USAGE: 2, NO_ENGINE: 3 };
 
@@ -75,6 +76,22 @@ async function tryLoadPlaywright() {
   }
   return null;
 }
+
+// Scroll-reveal sections (IntersectionObserver) stay opacity:0 until scrolled into view,
+// so step through the page once before measuring or capturing it.
+const PAGE_READY_SOURCE = `(async () => {
+  if (document.fonts) await document.fonts.ready;
+  const pause = (ms) => new Promise((done) => setTimeout(done, ms));
+  const step = Math.max(1, window.innerHeight);
+  const end = Math.min(document.documentElement.scrollHeight, ${MAX_SCREENSHOT_HEIGHT_PX});
+  for (let y = step; y < end; y += step) {
+    window.scrollTo(0, y);
+    await pause(${REVEAL_STEP_PAUSE_MS});
+  }
+  window.scrollTo(0, 0);
+  await pause(${REVEAL_SETTLE_MS});
+  return true;
+})()`;
 
 const IN_PAGE_PROBE_SOURCE = `((viewportWidth) => {
   const words = (t) => (t || "").trim().split(/\\s+/).filter(Boolean).length;
@@ -277,12 +294,13 @@ async function probeWithPlaywright(chromium, url, outDir, scheme) {
       await page.goto(url, { waitUntil: "networkidle", timeout: NAV_TIMEOUT_MS }).catch(() =>
         page.goto(url, { waitUntil: "load", timeout: NAV_TIMEOUT_MS })
       );
+      await page.evaluate(PAGE_READY_SOURCE);
       const metrics = await page.evaluate(
         new Function("vpWidth", `return ${IN_PAGE_PROBE_SOURCE}(vpWidth);`),
         vp.width
       );
       const screenshot = outDir ? join(outDir, vp.screenshot) : null;
-      if (screenshot) await page.screenshot({ path: screenshot, fullPage: true });
+      if (screenshot) await playwrightScreenshot(page, vp, screenshot);
       results.push({ name: vp.name, width: vp.width, height: vp.height, screenshot, ...metrics });
       await context.close();
     }
@@ -290,6 +308,15 @@ async function probeWithPlaywright(chromium, url, outDir, scheme) {
     await browser.close();
   }
   return results;
+}
+
+const cappedScreenshotHeight = (vp, contentHeight) =>
+  Math.min(MAX_SCREENSHOT_HEIGHT_PX, Math.max(vp.height, Math.ceil(contentHeight)));
+
+async function playwrightScreenshot(page, vp, path) {
+  const contentHeight = await page.evaluate("document.documentElement.scrollHeight");
+  const height = cappedScreenshotHeight(vp, contentHeight);
+  await page.screenshot({ path, fullPage: true, clip: { x: 0, y: 0, width: vp.width, height } });
 }
 
 function findChromeBinary() {
@@ -409,7 +436,7 @@ async function cdpEvaluate(session, expression) {
 
 async function cdpScreenshot(session, vp, path) {
   const { cssContentSize } = await session.send("Page.getLayoutMetrics");
-  const height = Math.min(MAX_SCREENSHOT_HEIGHT_PX, Math.max(vp.height, Math.ceil(cssContentSize.height)));
+  const height = cappedScreenshotHeight(vp, cssContentSize.height);
   const { data } = await session.send("Page.captureScreenshot", {
     format: "png",
     captureBeyondViewport: true,
@@ -432,8 +459,7 @@ async function cdpProbeViewport(session, vp, url, outDir) {
   await loaded;
   const landedOnErrorPage = await cdpEvaluate(session, 'location.href.startsWith("chrome-error://")');
   if (landedOnErrorPage) throw new Error(`Navigation failed: Chrome error page for ${url}`);
-  await cdpEvaluate(session, "document.fonts ? document.fonts.ready.then(() => true) : true");
-  await new Promise((settle) => setTimeout(settle, LAYOUT_SETTLE_MS));
+  await cdpEvaluate(session, PAGE_READY_SOURCE);
   const metrics = await cdpEvaluate(session, `${IN_PAGE_PROBE_SOURCE}(${vp.width})`);
   const screenshot = outDir ? join(outDir, vp.screenshot) : null;
   if (screenshot) await cdpScreenshot(session, vp, screenshot);
